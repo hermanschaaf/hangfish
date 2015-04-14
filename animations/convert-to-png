@@ -4,4 +4,5 @@ go run waves.go
 
 # You will need to have ImageMagick installed for this command
 mogrify -format png waves/svg/*.svg
+rm waves/png/*
 mv waves/svg/*.png waves/png/
