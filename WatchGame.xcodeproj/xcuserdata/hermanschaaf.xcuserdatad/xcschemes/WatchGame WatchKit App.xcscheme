@@ -14,23 +14,37 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CE1376161ADBFDA600101896"
-               BuildableName = "WatchGame.app"
-               BlueprintName = "WatchGame"
+               BlueprintIdentifier = "CE1376551ADBFDB800101896"
+               BuildableName = "WatchGame WatchKit App.app"
+               BlueprintName = "WatchGame WatchKit App"
                ReferencedContainer = "container:WatchGame.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CE1376321ADBFDA600101896"
-               BuildableName = "WatchGameTests.xctest"
-               BlueprintName = "WatchGameTests"
+               BlueprintIdentifier = "CE1376461ADBFDB800101896"
+               BuildableName = "WatchGame WatchKit Extension.appex"
+               BlueprintName = "WatchGame WatchKit Extension"
+               ReferencedContainer = "container:WatchGame.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CE1376161ADBFDA600101896"
+               BuildableName = "WatchGame.app"
+               BlueprintName = "WatchGame"
                ReferencedContainer = "container:WatchGame.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -42,23 +56,13 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CE1376321ADBFDA600101896"
-               BuildableName = "WatchGameTests.xctest"
-               BlueprintName = "WatchGameTests"
-               ReferencedContainer = "container:WatchGame.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CE1376161ADBFDA600101896"
-            BuildableName = "WatchGame.app"
-            BlueprintName = "WatchGame"
+            BlueprintIdentifier = "CE1376551ADBFDB800101896"
+            BuildableName = "WatchGame WatchKit App.app"
+            BlueprintName = "WatchGame WatchKit App"
             ReferencedContainer = "container:WatchGame.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -72,16 +76,27 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <RemoteRunnable
+         runnableDebuggingMode = "2"
+         BundleIdentifier = "com.apple.springboard"
+         RemotePath = "/WatchGame">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CE1376161ADBFDA600101896"
-            BuildableName = "WatchGame.app"
-            BlueprintName = "WatchGame"
+            BlueprintIdentifier = "CE1376551ADBFDB800101896"
+            BuildableName = "WatchGame WatchKit App.app"
+            BlueprintName = "WatchGame WatchKit App"
             ReferencedContainer = "container:WatchGame.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </RemoteRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "CE1376551ADBFDB800101896"
+            BuildableName = "WatchGame WatchKit App.app"
+            BlueprintName = "WatchGame WatchKit App"
+            ReferencedContainer = "container:WatchGame.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -91,16 +106,27 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <RemoteRunnable
+         runnableDebuggingMode = "2"
+         BundleIdentifier = "com.apple.springboard"
+         RemotePath = "/WatchGame">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CE1376161ADBFDA600101896"
-            BuildableName = "WatchGame.app"
-            BlueprintName = "WatchGame"
+            BlueprintIdentifier = "CE1376551ADBFDB800101896"
+            BuildableName = "WatchGame WatchKit App.app"
+            BlueprintName = "WatchGame WatchKit App"
             ReferencedContainer = "container:WatchGame.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </RemoteRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "CE1376551ADBFDB800101896"
+            BuildableName = "WatchGame WatchKit App.app"
+            BlueprintName = "WatchGame WatchKit App"
+            ReferencedContainer = "container:WatchGame.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+go run waves.go
+
+# You will need to have ImageMagick installed for this command
+mogrify -format png waves/svg/*.svg
+mv waves/svg/*.png waves/png/
