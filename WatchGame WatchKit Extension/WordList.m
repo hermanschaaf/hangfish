@@ -9,9 +9,23 @@
 #import <Foundation/Foundation.h>
 #import "WordList.h"
 
+@interface WordList()
+@property NSArray* words;
+@end
+
 @implementation WordList
-+(NSString*) getWord
+-(id)init
 {
-   return @"theword";
+    if ( self = [super init] ) {
+        self.words = @[@"CAT", @"DOG", @"GIRAFFE", @"HOOLIGAN", @"APPLE", @"ORANGE", @"WATCH", @"PEACH", @"TREE"];
+    }
+    return self;
+}
+
+-(NSString*) getWord
+{
+    int len = (int)[self.words count];
+    unsigned int i = arc4random_uniform(len);
+    return [self.words objectAtIndex:i];
 }
 @end

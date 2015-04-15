@@ -10,10 +10,13 @@
 #define WatchGame_Game_h
 
 @interface Game : NSObject
--(id)init;
+-(id)init:(unsigned int)numOptions;
 -(void)nextWord;
--(NSString*)getAnswer;
+-(void)guess:(NSString*)ch;
 -(NSString*)getQuestion;
+-(NSString*)getAnswer;
+-(NSArray*)getOptions;
+-(int)remainingLives;
 @end
 
 #endif

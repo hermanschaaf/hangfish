@@ -32,12 +32,21 @@
                             <items>
                                 <button width="0.33333332999999998" widthAdjustment="1" height="1" alignment="left" title="E" id="j2K-Ev-K0b">
                                     <color key="backgroundColor" red="0.086274509803921567" green="0.5490196078431373" blue="0.88627450980392153" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <connections>
+                                        <action selector="leftButtonPress" destination="AgC-eL-Hgc" id="EiB-tB-oR0"/>
+                                    </connections>
                                 </button>
                                 <button width="0.33333332999999998" height="1" alignment="left" title="H" id="dqT-ZZ-1fk">
                                     <color key="backgroundColor" red="0.086274509803921567" green="0.5490196078431373" blue="0.88627450980392153" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <connections>
+                                        <action selector="middleButtonPress" destination="AgC-eL-Hgc" id="Lcg-8i-hEr"/>
+                                    </connections>
                                 </button>
                                 <button width="0.33333332999999998" widthAdjustment="1" height="1" alignment="left" title="P" id="lZj-h4-V6V">
                                     <color key="backgroundColor" red="0.086274509803921567" green="0.5490196078431373" blue="0.88627450980392153" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <connections>
+                                        <action selector="rightButtonPress" destination="AgC-eL-Hgc" id="XHV-yV-rHI"/>
+                                    </connections>
                                 </button>
                             </items>
                             <edgeInsets key="margins" left="0.0" right="0.0" top="0.0" bottom="0.0"/>

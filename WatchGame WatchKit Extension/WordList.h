@@ -10,7 +10,7 @@
 #define WatchGame_WordList_h
 
 @interface WordList : NSObject 
-+(NSString*)getWord;
+-(NSString*)getWord;
 @end
 
 #endif

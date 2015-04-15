@@ -24,6 +24,11 @@
 @property (weak, nonatomic) IBOutlet WKInterfaceButton *leftButton;
 @property (weak, nonatomic) IBOutlet WKInterfaceButton *middleButton;
 @property (weak, nonatomic) IBOutlet WKInterfaceButton *rightButton;
+@property NSArray* buttons;
+
+- (IBAction)leftButtonPress;
+- (IBAction)middleButtonPress;
+- (IBAction)rightButtonPress;
 
 @property NSInteger currentIndex;
 @property Game* game;
@@ -36,25 +41,25 @@
     [super awakeWithContext:context];
 
     self.groups = [[NSArray alloc] initWithObjects:self.firstGroup, self.secondGroup, self.thirdGroup, self.fourthGroup, nil];
+    self.buttons = [[NSArray alloc] initWithObjects:self.leftButton, self.middleButton, self.rightButton, nil];
     
     // Configure interface objects here.
-    self.game = [[Game alloc] init];
+    self.game = [[Game alloc] init: (unsigned int)[self.buttons count]];
     [self setIndex:0];
-    [self nextWord];
-    
-    [self.leftButton methodForSelector:@selector(buttonAction)];
+    [self updateUI];
 }
 
--(void)buttonAction
+-(void)updateUI
 {
-    NSLog(@"well now");
-}
-
--(void)nextWord
-{
-    [self.game nextWord];
     NSString* question = [self.game getQuestion];
+    NSArray* options = [self.game getOptions];
+    
     [self.word setText:question];
+    int i = 0;
+    for (NSString* option in options) {
+        [[self.buttons objectAtIndex:i] setTitle: option];
+        i++;
+    }
 }
 
 -(void)setIndex:(int)index
@@ -77,7 +82,9 @@
             [group setBackgroundImageNamed:@"blue"];
         }
     }
-    // [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(animateTopDown) userInfo:nil repeats:NO];
+    if (self.currentIndex > 0){
+        [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(animateTopDown) userInfo:nil repeats:NO];   
+    }
 }
 
 -(void)animateTopDown
@@ -93,6 +100,39 @@
     [group setBackgroundImageNamed:@"top-down"];
     [group startAnimatingWithImagesInRange:NSMakeRange(0, 10) duration: 1.0 repeatCount:1];
 //    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(animateMiddleDown) userInfo:nil repeats:NO];
+}
+
+- (void)buttonPress:(int)choice
+{
+    NSString* choiceStr = [[self.game getOptions] objectAtIndex:choice];
+    
+    int livesBefore = [self.game remainingLives];
+    [self.game guess:choiceStr];
+    int livesNow = [self.game remainingLives];
+    
+    if (livesNow < livesBefore) {
+        [self setIndex:3 - livesNow];
+    }
+    
+    [self updateUI];
+}
+
+- (IBAction)leftButtonPress
+{
+    NSLog(@"left button pressed");
+    [self buttonPress:0];
+}
+
+- (IBAction)middleButtonPress
+{
+    NSLog(@"middle button pressed");
+    [self buttonPress:1];
+}
+
+- (IBAction)rightButtonPress
+{
+    NSLog(@"right button pressed");
+    [self buttonPress:2];
 }
 
 - (void)willActivate {
