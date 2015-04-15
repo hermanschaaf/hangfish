@@ -9,8 +9,10 @@
 #ifndef WatchGame_WordList_h
 #define WatchGame_WordList_h
 
-@interface WordList : NSObject 
+@interface WordList : NSObject
+-(void) nextWord;
 -(NSString*)getWord;
+-(NSString*)getCategory;
 @end
 
 #endif

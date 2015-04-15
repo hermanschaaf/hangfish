@@ -19,6 +19,8 @@
 @property NSMutableDictionary* guessed;
 @property NSString* alphabet;
 @property int lives;
+@property int score;
+@property NSTimer* scoreTimer;
 @end
 
 @implementation Game
@@ -30,6 +32,8 @@
         self.numOptions = numOptions;
         self.wordList = [[WordList alloc] init];
         self.lives = 3;
+        self.score = 200;
+        self.scoreTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(decreaseScore) userInfo:nil repeats:YES];
         
         [self nextWord];
     }
@@ -38,6 +42,7 @@
 
 -(void)nextWord
 {
+    [self.wordList nextWord];
     self.currentWord = [self.wordList getWord];
     self.guessed = [[NSMutableDictionary alloc] init];
     [self updateOptions];
@@ -59,11 +64,18 @@
          // substring here contains each character in turn
          if ([self haveGuessed:substring]) {
             [q addObject:substring];
+         } else if ([substring isEqualToString:@" "]) {
+             [q addObject:@" "];
          } else {
-            [q addObject:@"_"];
+             [q addObject:@"_"];
          }
      }];
     return [q componentsJoinedByString:@" "];
+}
+
+-(NSString*)getHint
+{
+    return [self.wordList getCategory];
 }
 
 // unknownCharactersLeft tells us how many characters are still blank
@@ -73,7 +85,7 @@
     [self.currentWord enumerateSubstringsInRange:NSMakeRange(0, [self.currentWord length])
          options:NSStringEnumerationByComposedCharacterSequences
       usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop){
-          if (![self haveGuessed:substring]) {
+          if (![self haveGuessed:substring] && ![substring isEqualToString:@" "]) {
               unknown += 1;
           }
       }];
@@ -91,9 +103,10 @@
 -(void)updateOptions
 {
     NSMutableArray* options = [[NSMutableArray alloc] init];
+    NSMutableString* chosen = [[NSMutableString alloc] init];
     
     NSString* correctChoice = [self getRandomCharFrom:self.currentWord];
-    while ([self haveGuessed:correctChoice]) {
+    while ([self haveGuessed:correctChoice] || [correctChoice isEqualToString:@" "]) {
         correctChoice = [self getRandomCharFrom:self.currentWord];
     }
     unsigned int ansPos = arc4random_uniform((int)self.numOptions);
@@ -103,13 +116,13 @@
         if (i == ansPos) {
             rand = correctChoice;
         } else {
-            // improvement: can use alphabet instead
             rand = [self getRandomCharFrom:self.alphabet];
-            while ([self haveGuessed:rand] && ![rand isEqualToString:correctChoice] && ![options containsObject:rand]) {
+            while ([self haveGuessed:rand] || [rand isEqualToString:correctChoice] || [chosen containsString:rand]) {
                 rand = [self getRandomCharFrom:self.alphabet];
             }
         }
         [options addObject:rand];
+        [chosen appendString:rand];
     }
     self.currentOptions = options;
 }
@@ -135,8 +148,11 @@
     if(unknownNow > 0) {
         if (unknownBefore == unknownNow) {
             self.lives -= 1;
+        } else {
+            [self increaseScore: 25];
         }
     } else {
+        [self increaseScore: 300];
         [self nextWord];
     }
     
@@ -146,6 +162,23 @@
 -(int)remainingLives
 {
     return self.lives;
+}
+
+-(int)getScore
+{
+    return self.score;
+}
+
+-(void)decreaseScore
+{
+    if (self.score > 0) {
+        self.score -= 1;
+    }
+}
+
+-(void)increaseScore:(int)inc
+{
+    self.score += inc;
 }
 
 -(BOOL)haveGuessed:(NSString*)ch

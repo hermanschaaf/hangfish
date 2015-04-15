@@ -30,10 +30,14 @@
 - (IBAction)middleButtonPress;
 - (IBAction)rightButtonPress;
 
+@property (weak, nonatomic) IBOutlet WKInterfaceLabel *categoryLabel;
+@property (weak, nonatomic) IBOutlet WKInterfaceLabel *scoreLabel;
+
 @property NSInteger currentIndex;
 @property Game* game;
 
 @property NSTimer* currentTimer;
+@property NSTimer* scoreTimer;
 @end
 
 
@@ -47,8 +51,10 @@
     
     // Configure interface objects here.
     self.game = [[Game alloc] init: (unsigned int)[self.buttons count]];
+    
     [self setIndex:0];
     [self updateUI];
+    self.scoreTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateScoreLabel) userInfo:nil repeats:YES];
     
     [self.fish setImageNamed:@"fish"];
     [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 11) duration: 1.2 repeatCount:NSIntegerMax];
@@ -60,6 +66,9 @@
     NSArray* options = [self.game getOptions];
     
     [self.word setText:question];
+    NSString* hint = [self.game getHint];
+    hint = [hint stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[hint substringToIndex:1] uppercaseString]];
+    [self.categoryLabel setText: hint];
     int i = 0;
     for (NSString* option in options) {
         [[self.buttons objectAtIndex:i] setTitle: option];
@@ -128,6 +137,7 @@
     NSString* choiceStr = [[self.game getOptions] objectAtIndex:choice];
     
     int livesBefore = [self.game remainingLives];
+    
     [self.game guess:choiceStr];
     int livesNow = [self.game remainingLives];
     
@@ -136,6 +146,11 @@
     }
     
     [self updateUI];
+}
+
+- (void)updateScoreLabel
+{
+    [self.scoreLabel setText:[NSString stringWithFormat:@"%d", [self.game getScore]]];
 }
 
 - (IBAction)leftButtonPress

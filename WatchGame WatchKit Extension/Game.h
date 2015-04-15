@@ -16,6 +16,8 @@
 -(NSString*)getQuestion;
 -(NSString*)getAnswer;
 -(NSArray*)getOptions;
+-(NSString*)getHint;
+-(int)getScore;
 -(int)remainingLives;
 @end
 
