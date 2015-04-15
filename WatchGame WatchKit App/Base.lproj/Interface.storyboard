@@ -24,7 +24,7 @@
                         </group>
                         <group width="1" alignment="left" radius="0.0" spacing="0.0" id="V1Z-N5-zXK" userLabel="Third Group">
                             <items>
-                                <imageView width="1" height="1" alignment="left" id="ubM-rA-3Se"/>
+                                <imageView width="1" height="1" alignment="left" image="fish" id="ubM-rA-3Se"/>
                             </items>
                             <edgeInsets key="margins" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
                         </group>

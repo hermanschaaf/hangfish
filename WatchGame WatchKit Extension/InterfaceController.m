@@ -32,6 +32,8 @@
 
 @property NSInteger currentIndex;
 @property Game* game;
+
+@property NSTimer* currentTimer;
 @end
 
 
@@ -47,6 +49,9 @@
     self.game = [[Game alloc] init: (unsigned int)[self.buttons count]];
     [self setIndex:0];
     [self updateUI];
+    
+    [self.fish setImageNamed:@"fish"];
+    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 11) duration: 1.2 repeatCount:NSIntegerMax];
 }
 
 -(void)updateUI
@@ -64,42 +69,58 @@
 
 -(void)setIndex:(int)index
 {
+    if (self.currentTimer != nil ) {
+        [self.currentTimer invalidate];
+    }
+    if (index >= [self.groups count]) {
+        NSLog(@"Game over buddy");
+        return;
+    }
+    
     self.currentIndex = index;
     NSLog(@"Current index is: %ld", (long)self.currentIndex);
     for (long i = 0; i < [self.groups count]; i++) {
         WKInterfaceGroup* group = [self.groups objectAtIndex:i];
         [group setBackgroundColor:[UIColor blackColor]];
         if (self.currentIndex == 0 && i == 0) {
-            [group setBackgroundImageNamed:@"frame"];
+            [group setBackgroundImageNamed:@"wave-standing"];
             [group startAnimatingWithImagesInRange:NSMakeRange(0, 10) duration: 1.0 repeatCount:NSIntegerMax];
         } else if (i < self.currentIndex - 1) {
             [group setBackgroundImageNamed:@"black"];
         } else if (i == self.currentIndex - 1) {
-            [group setBackgroundImageNamed:@"middle-down"];
-            [group startAnimatingWithImagesInRange:NSMakeRange(0, 10) duration: 1.0 repeatCount:1];
+            [group setBackgroundImageNamed:@"wave-to-bottom"];
+            [group startAnimatingWithImagesInRange:NSMakeRange(0, 18) duration: 1.8 repeatCount:1];
         } else if (i == self.currentIndex) {
         } else {
             [group setBackgroundImageNamed:@"blue"];
         }
     }
     if (self.currentIndex > 0){
-        [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(animateTopDown) userInfo:nil repeats:NO];   
+        self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(animateTopDown) userInfo:nil repeats:NO];
     }
 }
 
 -(void)animateTopDown
 {
-    long prev = [self currentIndex]-1;
-    if (prev >= 0) {
-        WKInterfaceGroup* group = [self.groups objectAtIndex:prev];
-        [group setBackgroundImageNamed:@"black"];
-    }
+//    long prev = [self currentIndex]-1;
+//    if (prev >= 0) {
+//        WKInterfaceGroup* group = [self.groups objectAtIndex:prev];
+//        [group setBackgroundImageNamed:@"black"];
+//    }
     
     WKInterfaceGroup* group = [self.groups objectAtIndex:[self currentIndex]];
     [group setBackgroundColor:[UIColor blackColor]];
-    [group setBackgroundImageNamed:@"top-down"];
-    [group startAnimatingWithImagesInRange:NSMakeRange(0, 10) duration: 1.0 repeatCount:1];
-//    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(animateMiddleDown) userInfo:nil repeats:NO];
+    [group setBackgroundImageNamed:@"wave-from-top"];
+    [group startAnimatingWithImagesInRange:NSMakeRange(0, 3) duration: 0.3 repeatCount:1];
+    self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(animateWaves) userInfo:nil repeats:NO];
+}
+
+-(void)animateWaves
+{
+    WKInterfaceGroup* group = [self.groups objectAtIndex:[self currentIndex]];
+    [group setBackgroundImageNamed:@"wave-standing"];
+    [group startAnimatingWithImagesInRange:NSMakeRange(0, 10) duration: 1.0 repeatCount:NSIntegerMax];
+
 }
 
 - (void)buttonPress:(int)choice
