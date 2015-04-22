@@ -38,6 +38,7 @@
 
 @property NSTimer* currentTimer;
 @property NSTimer* scoreTimer;
+@property NSTimer* fishTimer;
 @end
 
 
@@ -56,8 +57,7 @@
     [self updateUI];
     self.scoreTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateScoreLabel) userInfo:nil repeats:YES];
     
-    [self.fish setImageNamed:@"fish"];
-    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 11) duration: 1.2 repeatCount:NSIntegerMax];
+    [self resetFishAnimation];
 }
 
 -(void)updateUI
@@ -137,15 +137,45 @@
     NSString* choiceStr = [[self.game getOptions] objectAtIndex:choice];
     
     int livesBefore = [self.game remainingLives];
+    int roundBefore = [self.game getRound];
     
     [self.game guess:choiceStr];
     int livesNow = [self.game remainingLives];
     
     if (livesNow < livesBefore) {
+        // wrong answer
+        if (livesNow <= 0) {
+            [self gameOver];
+            return;
+        }
+        
         [self setIndex:3 - livesNow];
+    } else {
+        // correct
+        int roundNow = [self.game getRound];
+        if (roundNow > roundBefore) {
+            if (self.fishTimer != nil ) {
+                [self.fishTimer invalidate];
+            }
+            
+            [self.fish setImageNamed:@"fish-swimming"];
+            [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 32) duration: 2.0 repeatCount:1];
+            self.fishTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(resetFishAnimation) userInfo:nil repeats:NO];
+        }
     }
     
     [self updateUI];
+}
+
+- (void)gameOver
+{
+    NSLog(@"Game over!");
+}
+
+- (void)resetFishAnimation
+{
+    [self.fish setImageNamed:@"fish"];
+    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 11) duration: 1.2 repeatCount:NSIntegerMax];
 }
 
 - (void)updateScoreLabel

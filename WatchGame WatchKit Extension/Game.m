@@ -14,6 +14,7 @@
 @property WordList* wordList;
 
 @property unsigned int numOptions;
+@property int round;
 @property NSString* currentWord;
 @property NSArray* currentOptions;
 @property NSMutableDictionary* guessed;
@@ -33,6 +34,7 @@
         self.wordList = [[WordList alloc] init];
         self.lives = 3;
         self.score = 200;
+        self.round = 0;
         self.scoreTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(decreaseScore) userInfo:nil repeats:YES];
         
         [self nextWord];
@@ -42,9 +44,20 @@
 
 -(void)nextWord
 {
+    self.round +=1;
+    
     [self.wordList nextWord];
     self.currentWord = [self.wordList getWord];
     self.guessed = [[NSMutableDictionary alloc] init];
+    
+    // we give a hint by showing one random character in the word
+    NSString* randomChar = [self getRandomCharFrom:self.currentWord];
+    while ([self haveGuessed:randomChar] || [randomChar isEqualToString:@" "]) {
+        randomChar = [self getRandomCharFrom:self.currentWord];
+    }
+    [self guess:randomChar];
+    
+    // update the options (stored in currentOptions)
     [self updateOptions];
 }
 
@@ -188,6 +201,11 @@
         return [value boolValue];
     }
     return FALSE;
+}
+
+-(int)getRound
+{
+    return self.round;
 }
 
 @end

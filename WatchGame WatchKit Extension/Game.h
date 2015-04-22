@@ -19,6 +19,7 @@
 -(NSString*)getHint;
 -(int)getScore;
 -(int)remainingLives;
+-(int)getRound;
 @end
 
 #endif
