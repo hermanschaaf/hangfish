@@ -34,6 +34,7 @@
 @property (weak, nonatomic) IBOutlet WKInterfaceLabel *scoreLabel;
 
 @property NSInteger currentIndex;
+@property NSInteger secondsLeftBeforeNewGame; // seconds left before you can play again
 @property Game* game;
 
 @property NSTimer* currentTimer;
@@ -68,6 +69,7 @@
         [[self.buttons objectAtIndex:i] setTitle: option];
         i++;
     }
+    [self updateScoreLabel];
 }
 
 -(void)setIndex:(int)index
@@ -100,24 +102,20 @@
     if (self.currentIndex > 0){
         self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(animateTopDown) userInfo:nil repeats:NO];
     }
-    if (self.currentIndex >= 3){
-        self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(removeWater) userInfo:nil repeats:NO];
-    }
 }
 
 -(void)animateTopDown
 {
-//    long prev = [self currentIndex]-1;
-//    if (prev >= 0) {
-//        WKInterfaceGroup* group = [self.groups objectAtIndex:prev];
-//        [group setBackgroundImageNamed:@"black"];
-//    }
-    
     WKInterfaceGroup* group = [self.groups objectAtIndex:[self currentIndex]];
     [group setBackgroundColor:[UIColor blackColor]];
     [group setBackgroundImageNamed:@"wave-from-top"];
     [group startAnimatingWithImagesInRange:NSMakeRange(0, 3) duration: 0.3 repeatCount:1];
-    self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(animateWaves) userInfo:nil repeats:NO];
+    
+    if(self.currentIndex >= 3) {
+        self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(removeWater) userInfo:nil repeats:NO];
+    } else {
+        self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(animateWaves) userInfo:nil repeats:NO];
+    }
 }
 
 -(void)animateWaves
@@ -133,6 +131,97 @@
         WKInterfaceGroup* group = [self.groups objectAtIndex:i];
         [group setBackgroundImageNamed:@"black"];
     }
+}
+
+- (void)gameBegin
+{
+    self.game = [[Game alloc] init: (unsigned int)[self.buttons count]];
+    
+    [self setIndex:0];
+    [self updateUI];
+    self.scoreTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateScoreLabel) userInfo:nil repeats:YES];
+    
+    [self resetFishAnimation];
+
+    [self.leftButton setHidden:FALSE];
+    [self.rightButton setHidden:FALSE];
+    [self.rightButton setWidth:self.contentFrame.size.width / 3];
+    [self.middleButton setWidth:self.contentFrame.size.width / 3];
+}
+
+- (void)gameOver
+{
+    [self.scoreTimer invalidate];
+    
+    self.fishTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(deadFishAnimation) userInfo:nil repeats:NO];
+    
+    BOOL highScore = [self saveScore];
+    
+    if (highScore) {
+        [self.categoryLabel setText:@"HIGH SCORE!"];
+    } else {
+        [self.categoryLabel setText:@"GAME OVER"];
+    }
+    [self.word setText:[self.game getAnswer]];
+    [self.scoreLabel setText:[NSString stringWithFormat:@"%d", [self.game getScore]]];
+    
+    [self.leftButton setHidden:TRUE];
+    [self.rightButton setTitle:@"BUY"];
+    [self.rightButton setWidth:self.contentFrame.size.width / 2];
+    [self.middleButton setWidth:self.contentFrame.size.width / 2];
+    [self.middleButton setEnabled:FALSE];
+    
+    self.secondsLeftBeforeNewGame = 10;
+    [self setRestartTimer];
+}
+
+- (void)setRestartTimer
+{
+    self.secondsLeftBeforeNewGame -= 1;
+    
+    if (self.secondsLeftBeforeNewGame >= 1) {
+        [self.middleButton setTitle:[NSString stringWithFormat:@"PLAY IN %ld", self.secondsLeftBeforeNewGame]];
+        
+        [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(setRestartTimer) userInfo:nil repeats:NO];
+    } else {
+        [self.middleButton setTitle:@"PLAY"];
+        [self.middleButton setEnabled:TRUE];
+    }
+}
+
+- (void)resetFishAnimation
+{
+    if (self.fishTimer != nil ) {
+        [self.fishTimer invalidate];
+    }
+    
+    [self.fish setImageNamed:@"fish"];
+    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 11) duration: 1.2 repeatCount:NSIntegerMax];
+}
+
+- (void)deadFishAnimation
+{
+    if (self.fishTimer != nil ) {
+        [self.fishTimer invalidate];
+    }
+    
+    [self.fish setImageNamed:@"fish-dead"];
+    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 4) duration: 0.4 repeatCount:1];
+}
+
+- (void)swimmingFishAnimation
+{
+    if (self.fishTimer != nil ) {
+        [self.fishTimer invalidate];
+    }
+    
+    [self.fish setImageNamed:@"fish-swimming"];
+    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 32) duration: 2.0 repeatCount:1];
+}
+
+- (void)updateScoreLabel
+{
+    [self.scoreLabel setText:[NSString stringWithFormat:@"%d", [self.game getScore]]];
 }
 
 - (void)buttonPress:(int)choice
@@ -156,12 +245,7 @@
         // correct
         int roundNow = [self.game getRound];
         if (roundNow > roundBefore) {
-            if (self.fishTimer != nil ) {
-                [self.fishTimer invalidate];
-            }
-            
-            [self.fish setImageNamed:@"fish-swimming"];
-            [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 32) duration: 2.0 repeatCount:1];
+            [self swimmingFishAnimation];
             self.fishTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(resetFishAnimation) userInfo:nil repeats:NO];
         }
     }
@@ -169,72 +253,36 @@
     [self updateUI];
 }
 
-
-- (void)gameBegin
-{
-    self.game = [[Game alloc] init: (unsigned int)[self.buttons count]];
-    
-    [self setIndex:0];
-    [self updateUI];
-    self.scoreTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateScoreLabel) userInfo:nil repeats:YES];
-    
-    [self resetFishAnimation];
-
-    [self.leftButton setHidden:FALSE];
-    [self.rightButton setHidden:FALSE];
-    [self.middleButton setWidth:self.contentFrame.size.width / 3];
-}
-
-- (void)gameOver
-{
-    [self.scoreTimer invalidate];
-    
-    [self deadFishAnimation];
-    [self.word setText:@"GAME OVER"];
-    [self.categoryLabel setText:@""];
-    [self.scoreLabel setText:[NSString stringWithFormat:@"%d", [self.game getScore]]];
-    
-    [self.leftButton setHidden:TRUE];
-    [self.rightButton setHidden:TRUE];
-    [self.middleButton setTitle:@"PLAY AGAIN"];
-    [self.middleButton setWidth:self.contentFrame.size.width];
-    
-    // [self presentControllerWithName:@"Game Over" context:nil];
-}
-
-- (void)resetFishAnimation
-{
-    [self.fish setImageNamed:@"fish"];
-    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 11) duration: 1.2 repeatCount:NSIntegerMax];
-}
-
-- (void)deadFishAnimation
-{
-    [self.fish setImageNamed:@"fish-dead"];
-    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 4) duration: 0.4 repeatCount:1];
-}
-
-- (void)updateScoreLabel
-{
-    [self.scoreLabel setText:[NSString stringWithFormat:@"%d", [self.game getScore]]];
-}
-
 - (IBAction)leftButtonPress
 {
-    NSLog(@"left button pressed");
     [self buttonPress:0];
 }
 
 - (IBAction)middleButtonPress
 {
-    NSLog(@"middle button pressed");
-    [self buttonPress:1];
+    if([self.game isGameOver]){
+        [self gameBegin];
+    } else {
+        [self buttonPress:1];
+    }
 }
 
 - (IBAction)rightButtonPress
 {
-    NSLog(@"right button pressed");
-    [self buttonPress:2];
+    if([self.game isGameOver]){
+        [self openParentBuyScreen];
+    } else {
+        [self buttonPress:2];
+    }
+}
+
+- (void) openParentBuyScreen
+{
+    [WKInterfaceController openParentApplication:@{@"wantbuy": @1} reply:^(NSDictionary *replyInfo, NSError *error) {
+        NSLog(@"ReplyReceived : %lu",(unsigned long)[replyInfo count]);
+        NSLog(@"Reply Info: %@", replyInfo);
+        NSLog(@"Error: %@", error);
+    }];
 }
 
 - (void)willActivate {
@@ -245,6 +293,18 @@
 - (void)didDeactivate {
     // This method is called when watch view controller is no longer visible
     [super didDeactivate];
+}
+
+// returns whether or not this was a high score
+- (BOOL)saveScore {
+    NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+    NSInteger prevHigh = [defs integerForKey:@"highscore"];
+    NSInteger score = (long)[self.game getScore];
+    if (prevHigh < score) {
+        [defs setInteger:score forKey:@"highscore"];
+        return TRUE;
+    }
+    return FALSE;
 }
 
 @end

@@ -332,6 +332,7 @@
 					};
 					CE1376551ADBFDB800101896 = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = VN3WVGHJ83;
 					};
 				};
 			};
@@ -611,6 +612,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -628,6 +630,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				IBSC_MODULE = WatchGame_WatchKit_Extension;
 				INFOPLIST_FILE = "WatchGame WatchKit App/Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";

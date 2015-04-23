@@ -63,7 +63,14 @@
 
 -(NSString*)getAnswer
 {
-    return self.currentWord;
+    NSMutableArray* q = [[NSMutableArray alloc] initWithCapacity:[self.currentWord length]*2];
+    [self.currentWord enumerateSubstringsInRange:NSMakeRange(0, [self.currentWord length])
+         options:NSStringEnumerationByComposedCharacterSequences
+      usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop){
+          // substring here contains each character in turn
+          [q addObject:substring];
+      }];
+    return [q componentsJoinedByString:@" "];
 }
 
 // get the current word, with unknown letters blanked out with
@@ -214,6 +221,11 @@
 -(int)getRound
 {
     return self.round;
+}
+
+-(BOOL)isGameOver
+{
+    return self.lives <= 0;
 }
 
 @end

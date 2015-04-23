@@ -20,6 +20,7 @@
 -(int)getScore;
 -(int)remainingLives;
 -(int)getRound;
+-(BOOL)isGameOver;
 @end
 
 #endif

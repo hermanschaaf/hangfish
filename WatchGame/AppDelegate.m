@@ -124,4 +124,12 @@
     }
 }
 
+-(void)application:(UIApplication *)application handleWatchKitExtensionRequest:(NSDictionary *)userInfo reply:(void (^)(NSDictionary *))reply
+{
+    NSLog(@"Watchkit call received");
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"user wants to buy" object: nil];
+    
+    reply(@{@"bought": @"yes"});
+}
+
 @end
