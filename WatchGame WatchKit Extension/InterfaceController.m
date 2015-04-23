@@ -51,13 +51,7 @@
     self.buttons = [[NSArray alloc] initWithObjects:self.leftButton, self.middleButton, self.rightButton, nil];
     
     // Configure interface objects here.
-    self.game = [[Game alloc] init: (unsigned int)[self.buttons count]];
-    
-    [self setIndex:0];
-    [self updateUI];
-    self.scoreTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateScoreLabel) userInfo:nil repeats:YES];
-    
-    [self resetFishAnimation];
+    [self gameBegin];
 }
 
 -(void)updateUI
@@ -87,7 +81,6 @@
     }
     
     self.currentIndex = index;
-    NSLog(@"Current index is: %ld", (long)self.currentIndex);
     for (long i = 0; i < [self.groups count]; i++) {
         WKInterfaceGroup* group = [self.groups objectAtIndex:i];
         [group setBackgroundColor:[UIColor blackColor]];
@@ -106,6 +99,9 @@
     }
     if (self.currentIndex > 0){
         self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(animateTopDown) userInfo:nil repeats:NO];
+    }
+    if (self.currentIndex >= 3){
+        self.currentTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(removeWater) userInfo:nil repeats:NO];
     }
 }
 
@@ -129,7 +125,14 @@
     WKInterfaceGroup* group = [self.groups objectAtIndex:[self currentIndex]];
     [group setBackgroundImageNamed:@"wave-standing"];
     [group startAnimatingWithImagesInRange:NSMakeRange(0, 10) duration: 1.0 repeatCount:NSIntegerMax];
+}
 
+-(void)removeWater
+{
+    for (long i = 0; i < [self.groups count]; i++) {
+        WKInterfaceGroup* group = [self.groups objectAtIndex:i];
+        [group setBackgroundImageNamed:@"black"];
+    }
 }
 
 - (void)buttonPress:(int)choice
@@ -144,12 +147,11 @@
     
     if (livesNow < livesBefore) {
         // wrong answer
+        [self setIndex:3 - livesNow];
         if (livesNow <= 0) {
             [self gameOver];
             return;
         }
-        
-        [self setIndex:3 - livesNow];
     } else {
         // correct
         int roundNow = [self.game getRound];
@@ -167,15 +169,49 @@
     [self updateUI];
 }
 
+
+- (void)gameBegin
+{
+    self.game = [[Game alloc] init: (unsigned int)[self.buttons count]];
+    
+    [self setIndex:0];
+    [self updateUI];
+    self.scoreTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateScoreLabel) userInfo:nil repeats:YES];
+    
+    [self resetFishAnimation];
+
+    [self.leftButton setHidden:FALSE];
+    [self.rightButton setHidden:FALSE];
+    [self.middleButton setWidth:self.contentFrame.size.width / 3];
+}
+
 - (void)gameOver
 {
-    NSLog(@"Game over!");
+    [self.scoreTimer invalidate];
+    
+    [self deadFishAnimation];
+    [self.word setText:@"GAME OVER"];
+    [self.categoryLabel setText:@""];
+    [self.scoreLabel setText:[NSString stringWithFormat:@"%d", [self.game getScore]]];
+    
+    [self.leftButton setHidden:TRUE];
+    [self.rightButton setHidden:TRUE];
+    [self.middleButton setTitle:@"PLAY AGAIN"];
+    [self.middleButton setWidth:self.contentFrame.size.width];
+    
+    // [self presentControllerWithName:@"Game Over" context:nil];
 }
 
 - (void)resetFishAnimation
 {
     [self.fish setImageNamed:@"fish"];
     [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 11) duration: 1.2 repeatCount:NSIntegerMax];
+}
+
+- (void)deadFishAnimation
+{
+    [self.fish setImageNamed:@"fish-dead"];
+    [self.fish startAnimatingWithImagesInRange:NSMakeRange(0, 4) duration: 0.4 repeatCount:1];
 }
 
 - (void)updateScoreLabel

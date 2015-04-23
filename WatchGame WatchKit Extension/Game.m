@@ -161,6 +161,9 @@
     if(unknownNow > 0) {
         if (unknownBefore == unknownNow) {
             self.lives -= 1;
+            if (self.lives == 0) {
+                [self gameOver];
+            }
         } else {
             [self increaseScore: 25];
         }
@@ -170,6 +173,11 @@
     }
     
     [self updateOptions];
+}
+
+-(void)gameOver
+{
+    [self.scoreTimer invalidate];
 }
 
 -(int)remainingLives
